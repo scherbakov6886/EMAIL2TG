@@ -1,0 +1,39 @@
+name: Email2TG
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: email2tg
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run EMAIL2TG
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_IDS: ${{ secrets.TG_CHAT_IDS }}
+          IMAP_SERVER: ${{ secrets.IMAP_SERVER }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          MAIL_CYCLES: '5'
+          MAIL_INTERVAL: '60'
+        run: python EMAIL2TG.py
